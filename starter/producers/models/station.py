@@ -1,14 +1,24 @@
 """Methods pertaining to loading and configuring CTA "L" station data."""
 import logging
 from pathlib import Path
+from dataclasses import asdict, dataclass, field
 
 from confluent_kafka import avro
 
-from starter.producers.models import Turnstile
-from starter.producers.models.producer import Producer
+from models import Turnstile
+from models.producer import Producer
 
 logger = logging.getLogger(__name__)
 
+@dataclass
+class Arrival:
+    station_id: int
+    direction: str
+    prev_station_id: str
+    prev_direction: str
+    train_id: str
+    train_status: str
+    line: str
 
 class Station(Producer):
     """Defines a single station"""
@@ -26,7 +36,7 @@ class Station(Producer):
                 .replace("'", "")
         )
 
-        topic_name = f"org.cta.station.{station_name}.arrivals"
+        topic_name = f"org.chicago.cta.station.arrivals.{station_name}"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -50,6 +60,8 @@ class Station(Producer):
         # TODO: Complete this function by producing an arrival message to Kafka
         #
         #
+        arrival_data = Arrival(self.station_id, direction, prev_station_id, prev_direction, train.train_id, train.status.name, self.color.name)
+        print(f"Arrival data: {asdict(arrival_data)}")
 
         self.producer.produce(
             topic=self.topic_name,
@@ -60,8 +72,8 @@ class Station(Producer):
                 "prev_station_id": prev_station_id,
                 "prev_direction": prev_direction,
                 "train_id": train.train_id,
-                "train_status": train.status,
-                "line": self.color
+                "train_status": train.status.name,
+                "line": self.color.name
                 #
                 # TODO: Check if line config is right
                 #

@@ -20,7 +20,7 @@ class KafkaConsumer:
             is_avro=True,
             offset_earliest=False,
             sleep_secs=1.0,
-            consume_timeout=0.1,
+            consume_timeout=1.0,
     ):
         """Creates a consumer object for asynchronous use"""
         self.topic_name_pattern = topic_name_pattern
@@ -55,13 +55,14 @@ class KafkaConsumer:
         # how the `on_assign` callback should be invoked.
         #
         #
-        self.consumer.subscribe(self.topic_name_pattern, on_assign=self.on_assign)
+        print(f"Topic to subscribe to: {self.topic_name_pattern}")
+        self.consumer.subscribe([self.topic_name_pattern], on_assign=self.on_assign)
 
     def on_assign(self, consumer, partitions):
         """Callback for when topic assignment takes place"""
         # If the topic is configured to use `offset_earliest` set the partition offset to
         # the beginning or earliest
-        logger.info("on_assign is incomplete - skipping")
+
         for partition in partitions:
             if not self.offset_earliest:
                 partition.offset = OFFSET_BEGINNING
@@ -88,15 +89,15 @@ class KafkaConsumer:
         #
         message = self.consumer.poll(self.consume_timeout)
         if message is None:
-            logger.info("no message received by consumer")
+            # logger.info("no message received by consumer")
             return 0
         elif message.error() is not None:
             logger.info(f"error from consumer {message.error()}")
 
             return 0
         else:
-            self.message_handler(message)
-            logger.info(f"consumed message {message.key()}: {message.value()}")
+            self.message_handler.process_message(message)
+            # logger.info(f"consumed message {message.key()}: {message.value()}")
             return 1
 
     def close(self):

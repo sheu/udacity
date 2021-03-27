@@ -4,8 +4,8 @@ from pathlib import Path
 
 from confluent_kafka import avro
 
-from starter.producers.models.producer import Producer
-from starter.producers.models.turnstile_hardware import TurnstileHardware
+from models.producer import Producer
+from models.turnstile_hardware import TurnstileHardware
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class Turnstile(Producer):
             .replace("'", "")
         )
         super().__init__(
-            f"turnstile.{station_name}.events",
+            "org.cta.raw.turnstile",
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
             num_partitions=5,
@@ -37,14 +37,15 @@ class Turnstile(Producer):
     def run(self, timestamp, time_step):
         """Simulates riders entering through the turnstile."""
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
-        logger.info("turnstile kafka integration incomplete - skipping")
-        for _ in num_entries:
+
+        for _ in range(num_entries):
             self.producer.produce(
                 topic=self.topic_name,
-                key={"timestamp": timestamp},
+                key={"timestamp": timestamp.timestamp()},
                 value={
-                    "station_id": self.station_id,
-                    "line": self.color
+                    "station_id": self.station.station_id,
+                    "line": self.station.color.name,
+                    "station_name": self.station_name
                     #
                     # TODO: Check if line config is right
                     #

@@ -41,7 +41,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 def run_server():
     """Runs the Tornado Server and begins Kafka consumption"""
-    if topic_check.topic_exists("TURNSTILE_SUMMARY") is False:
+    if topic_check.topic_exists("TURNSTILE_SUMMARY_STREAM") is False:
         logger.fatal(
             "Ensure that the KSQL Command has run successfully before running the web server!"
         )
@@ -52,8 +52,8 @@ def run_server():
         )
         exit(1)
 
-    weather_model = Weather()
-    lines = Lines()
+    weather_model = Weather("W-Server")
+    lines = Lines("L-Server")
 
     application = tornado.web.Application(
         [(r"/", MainHandler, {"weather": weather_model, "lines": lines})]
@@ -63,23 +63,23 @@ def run_server():
     # Build kafka consumers
     consumers = [
         KafkaConsumer(
-            "org.chicago.cta.weather.v1",
-            weather_model.process_message,
+            "org.chicago.cta.weather.events",
+            weather_model,
             offset_earliest=True,
         ),
         KafkaConsumer(
             "org.chicago.cta.stations.table.v1",
-            lines.process_message,
+            lines,
             offset_earliest=True,
             is_avro=False,
         ),
         KafkaConsumer(
             "^org.chicago.cta.station.arrivals.",
-            lines.process_message,
+            lines,
             offset_earliest=True,
         ),
         KafkaConsumer(
-            "TURNSTILE_SUMMARY",
+            "TURNSTILE_SUMMARY_STREAM",
             lines.process_message,
             offset_earliest=True,
             is_avro=False,

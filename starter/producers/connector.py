@@ -13,7 +13,7 @@ CONNECTOR_NAME = "stations"
 
 def configure_connector():
     """Starts and configures the Kafka Connect connector"""
-    logging.debug("creating or updating kafka connect connector...")
+    logging.info("creating or updating kafka connect connector...")
 
     resp = requests.get(f"{KAFKA_CONNECT_URL}/{CONNECTOR_NAME}")
     if resp.status_code == 200:
@@ -26,7 +26,6 @@ def configure_connector():
     # using incrementing mode, with `stop_id` as the incrementing column name.
     # Make sure to think about what an appropriate topic prefix would be, and how frequently Kafka
     # Connect should run this connector (hint: not very often!)
-    logger.info("connector code not completed skipping connector creation")
     resp = requests.post(
         KAFKA_CONNECT_URL,
         headers={"Content-Type": "application/json"},
@@ -46,7 +45,7 @@ def configure_connector():
                 "mode": "incrementing",
                 "incrementing.column.name": "stop_id",
                 "topic.prefix": "raw.",
-                "poll.interval.ms": "10000",
+                "poll.interval.ms": "10000"
             }
         }),
     )

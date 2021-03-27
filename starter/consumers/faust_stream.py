@@ -29,7 +29,7 @@ class TransformedStation(faust.Record):
 
 
 def transform_raw_station_data(_station: Station):
-    line = ""
+
     if _station.blue:
         line = "blue"
     elif _station.green:
@@ -42,7 +42,7 @@ def transform_raw_station_data(_station: Station):
 
 app = faust.App("stations-stream", broker="kafka://localhost:9092", store="memory://")
 topic = app.topic("raw.stations", value_type=Station)
-out_topic = app.topic("pristine.stations", partitions=1)
+out_topic = app.topic("org.chicago.cta.stations.table.v1", partitions=1)
 # TODO: Define a Faust Table
 table = app.Table(
     "station-summary",
@@ -61,10 +61,14 @@ table = app.Table(
 #
 @app.agent(topic)
 async def station_event(station_events):
-    station_events.add_processor(transform_raw_station_data)
+    #station_events.add_processor(transform_raw_station_data)
+    print(f"started faust stream: ")
     async for std in station_events:
-        table[std.station_id] = std
-        await out_topic.send(key=std.station_id, value=std)
+        tranformed_station = transform_raw_station_data(std)
+        table[std.station_id] = tranformed_station
+        print(f"processed: {std.blue}")
+        #await out_topic.send(key=str(std.station_id), value=tranformed_station)
+
 
 
 if __name__ == "__main__":

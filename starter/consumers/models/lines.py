@@ -2,7 +2,7 @@
 import json
 import logging
 
-from starter.consumers.models import Line
+from models import Line
 
 
 logger = logging.getLogger(__name__)
@@ -11,14 +11,16 @@ logger = logging.getLogger(__name__)
 class Lines:
     """Contains all train lines"""
 
-    def __init__(self):
+    def __init__(self, name="Default"):
         """Creates the Lines object"""
         self.red_line = Line("red")
         self.green_line = Line("green")
         self.blue_line = Line("blue")
+        self.name = name
 
     def process_message(self, message):
-        """Processes a station message"""
+       # print(f"Processing message from topic: {self.name}")
+
         if "org.chicago.cta.station" in message.topic():
             value = message.value()
             if message.topic() == "org.chicago.cta.stations.table.v1":
@@ -31,7 +33,7 @@ class Lines:
                 self.blue_line.process_message(message)
             else:
                 logger.debug("discarding unknown line msg %s", value["line"])
-        elif "TURNSTILE_SUMMARY" == message.topic():
+        elif "TURNSTILE_SUMMARY_STREAM" == message.topic():
             self.green_line.process_message(message)
             self.red_line.process_message(message)
             self.blue_line.process_message(message)

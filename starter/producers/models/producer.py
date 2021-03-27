@@ -8,7 +8,7 @@ from confluent_kafka.avro import AvroProducer
 
 logger = logging.getLogger(__name__)
 
-BROKER_URL = "PLAINTEXT://localhost:9092,PLAINTEXT://localhost:9093,PLAINTEXT://localhost:9094"
+BROKER_URL = "PLAINTEXT://localhost:9092"
 
 
 class Producer:
@@ -34,7 +34,7 @@ class Producer:
         # Configure the broker properties below. Make sure to reference the project README
         # and use the Host URL for Kafka and Schema Registry!
         self.broker_properties = {
-            "bootsrap.servers": BROKER_URL,
+            "bootstrap.servers": BROKER_URL,
             "schema.registry.url": "http://localhost:8081",
             "client.id": "udacity-sheu"
         }
@@ -46,7 +46,7 @@ class Producer:
 
         # Configure the AvroProducer
         self.producer = AvroProducer(self.broker_properties, default_value_schema=self.value_schema,
-                                     default_key_schema=self.value_schema)
+                                     default_key_schema=self.key_schema)
 
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""

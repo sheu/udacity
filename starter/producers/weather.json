@@ -1,0 +1,32 @@
+{
+  "value_schema": {
+    "namespace": "com.udacity",
+    "type": "record",
+    "name": "weather.value",
+    "fields": [
+      {
+        "name": "temperature",
+        "type": "long"
+      },
+      {
+        "name": "status",
+        "type": "string"
+      }
+    ]
+  },
+  "key_schema": {
+    "namespace": "com.udacity",
+    "type": "record",
+    "name": "weather.key",
+    "fields": [
+      {
+        "name": "timestamp",
+        "type": "long"
+      }
+    ]
+  },
+  "value": {
+    "temperature": 48,
+    "status": "sunny"
+  }
+}

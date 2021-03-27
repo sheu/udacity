@@ -5,31 +5,32 @@
   "fields": [
     {
       "name": "station_id",
-      "type": "long"
+      "type": ["long", "null"],
+      "default": null
     },
     {
       "name": "train_id",
-      "type": "string"
+      "type": ["string", "null"]
     },
     {
       "name": "direction",
-      "type": "string"
+      "type": ["string", "null"]
     },
     {
       "name": "line",
-      "type": "string"
+      "type": ["string", "null"]
     },
     {
       "name": "train_status",
-      "type": "string"
+      "type": ["null","string"]
     },
     {
       "name": "prev_station_id",
-      "type": "long"
+      "type": ["long", "null"]
     },
     {
       "name": "prev_direction",
-      "type": "string"
+      "type": ["string", "null"]
     }
   ]
 }

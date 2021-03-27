@@ -5,13 +5,11 @@
   "fields": [
     {
       "name": "temperature",
-      "type": "long"
+      "type": ["long", "null"]
     },
     {
       "name": "status",
-      "type": "enum",
-      "namespace": "com.udacity",
-      "symbols": ["sunny", "partly_cloudy", "cloudy", "windy", "precipitation"]
+      "type": ["string", "null"]
     }
   ]
 }

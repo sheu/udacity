@@ -5,15 +5,15 @@
   "fields": [
     {
       "name": "station_id",
-      "type": "long"
+      "type": ["long", "null"]
     },
     {
       "name": "station_name",
-      "type": "string"
+      "type": ["string", "null"]
     },
     {
       "name": "line",
-      "type": "string"
+      "type": ["string", "null"]
     }
   ]
 }
