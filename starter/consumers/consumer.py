@@ -38,8 +38,9 @@ class KafkaConsumer:
         self.broker_properties = {
             "bootstrap.servers": "PLAINTEXT://localhost:9092",
             "group.id": "com.udacity.project1",
-            "auto.offset.reset": "earliest"
         }
+        if self.offset_earliest:
+            self.broker_properties["auto.offset.reset"] = "earliest"
 
         # Create the Consumer, using the appropriate type.
         if is_avro is True:
