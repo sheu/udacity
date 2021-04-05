@@ -1,0 +1,32 @@
+{
+    "type": "record",
+    "name": "click_event",
+    "namespace": "com.udacity.lesson3.exercise4",
+    "fields": [
+        {"name": "email", "type": "string"},
+        {"name": "timestamp", "type": "string"},
+        {"name": "uri", "type": "string"},
+        {"name": "number", "type": "int"},
+        {"name": "status",
+            "type": {
+                "type": "enum",
+                "name": "status",
+                "symbols": ["just", "test", "whatever"]
+                }
+        },
+        {
+            "name": "attributes",
+            "type": {
+                "type": "map",
+                "values": {
+                    "type": "record",
+                    "name": "attribute",
+                    "fields": [
+                        {"name": "element", "type": "string"},
+                        {"name": "content", "type": "string"}
+                    ]
+                }
+            }
+        }
+    ]
+}

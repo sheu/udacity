@@ -1,32 +1,13 @@
 {
-  "value_schema": {
-    "namespace": "com.udacity",
-    "type": "record",
-    "name": "weather.value",
-    "fields": [
-      {
-        "name": "temperature",
-        "type": "long"
-      },
-      {
-        "name": "status",
-        "type": "string"
-      }
+    "value_schema": "{\"namespace\": \"com.udacity\",\"type\": \"record\",\"name\": \"weather.value\",\"fields\": [{\"name\": \"temperature\",\"type\": \"long\"}, {\"name\": \"status\",\"type\": {\"type\": \"enum\",\"name\": \"status\",\"symbols\": [\"sunny\",\"partly_cloudy\",\"cloudy\",\"windy\",\"precipitation\"]}}]}",
+    "key_schema": "{\"namespace\": \"com.udacity\",\"type\": \"record\",\"name\": \"weather.key\",\"fields\": [{\"name\": \"timestamp\",\"type\": \"long\"}]}",
+    "records": [
+        {
+            "value": {
+                "temperature": 72,
+                "status": "precipitation"
+            },
+            "key": {"timestamp": 12345678910}
+        }
     ]
-  },
-  "key_schema": {
-    "namespace": "com.udacity",
-    "type": "record",
-    "name": "weather.key",
-    "fields": [
-      {
-        "name": "timestamp",
-        "type": "long"
-      }
-    ]
-  },
-  "value": {
-    "temperature": 48,
-    "status": "sunny"
-  }
 }

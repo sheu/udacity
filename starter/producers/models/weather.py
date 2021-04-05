@@ -34,6 +34,8 @@ class Weather(Producer):
 
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/weather_key.json")
     value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/weather_value.json")
+    key_schema_raw = ""
+    value_schema_raw = ""
 
     winter_months = set((0, 1, 2, 3, 10, 11))
     summer_months = set((6, 7, 8))
@@ -46,13 +48,12 @@ class Weather(Producer):
         #
         #
         #
-        # if Weather.key_schema is None:
-        #     with open(f"{Path(__file__).parents[0]}/schemas/weather_key.json") as f:
-        #         Weather.key_schema = json.load(f)
+        with open(f"{Path(__file__).parents[0]}/schemas/weather_key.json") as f:
+            Weather.key_schema_raw = json.load(f)
         #
-        # if Weather.value_schema is None:
-        #     with open(f"{Path(__file__).parents[0]}/schemas/weather_value.json") as f:
-        #         Weather.value_schema = json.load(f)
+        with open(f"{Path(__file__).parents[0]}/schemas/weather_value.json") as f:
+            Weather.value_schema_raw = json.load(f)
+
         super().__init__(
             "org.chicago.cta.weather.events",
             key_schema=Weather.key_schema,
@@ -68,7 +69,6 @@ class Weather(Producer):
         elif month in Weather.summer_months:
             self.temp = 85.0
 
-
     def _set_weather(self, month):
         """Returns the current weather"""
         mode = 0.0
@@ -83,13 +83,21 @@ class Weather(Producer):
         self._set_weather(month)
 
         weather_event = WeatherEvent(int(self.temp), self.status.name)
+        sanitized_value=str(Weather.value_schema_raw).replace("'", "\"")
+        sanitized_key = str(Weather.key_schema_raw).replace("'", "\"")
+        data_to_post = json.dumps({
+            "value_schema": f"{sanitized_value}",
+            "key_schema": f"{sanitized_key}",
+            "records": [{
+                "value": asdict(weather_event),
+                "key": {"timestamp": self.time_millis()}}]
+        })
+        print(f"Data to post: {data_to_post}")
 
-        self.producer.produce(
-            topic="org.chicago.cta.weather.events",
-            value=asdict(weather_event),
-            key={"timestamp": self.time_millis()}
-
-        )
+        # self.producer.produce(
+        #     topic="org.chicago.cta.weather.events",
+        #     value=asdict(weather_event),
+        #     key={"timestamp": self.time_millis()})
 
         #
         #
@@ -98,32 +106,15 @@ class Weather(Producer):
         #
         #
 
-        # logger.info("weather kafka proxy integration incomplete - skipping")
-        # print(f"Weather: {asdict(weather_event)} schema: {self.value_schema}")
-        # resp = requests.post(
-        #     #
-        #     #
-        #     # TODO: What URL should be POSTed to?
-        #     #
-        #     #
-        #     f"{Weather.rest_proxy_url}/topics/org.cta.weather.events",
-        #     #
-        #     #
-        #     # TODO: What Headers need to bet set?
-        #     #
-        #     #
-        #     headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
-        #     data=json.dumps(
-        #         {
-        #             "value_schema": self.value_schema,
-        #             "key_schema": self.key_schema,
-        #             "value": {
-        #                 "temperature": int(self.temp),
-        #                 "status": self.status.name
-        #             }
-        #         }
-        #     ),
-        # )
-        # resp.raise_for_status()
+        logger.info("weather kafka proxy integration incomplete - skipping")
+        print(f"Weather: {asdict(weather_event)} schema: {self.value_schema}")
+        resp = requests.post(
+
+            f"{Weather.rest_proxy_url}/topics/org.chicago.cta.weather.events",
+
+            headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
+            data=data_to_post
+        )
+        resp.raise_for_status()
 
         print(f"sent weather data to kafka, temp: {self.temp}, status: {self.status.name}")

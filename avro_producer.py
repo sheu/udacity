@@ -140,7 +140,7 @@ def main():
 async def produce_consume(topic_name):
     """Runs the Producer and Consumer tasks"""
     t1 = asyncio.create_task(produce(topic_name))
-    t2 = asyncio.create_task(consume(topic_name))
+    t2 = asyncio.create_task(consume("raw.stations"))
     await t1
     await t2
 
