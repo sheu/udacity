@@ -24,7 +24,7 @@ KSQL_URL = "http://localhost:8088"
 KSQL_STATEMENT = """
 CREATE stream turnstilestream (station_id BIGINT, station_name VARCHAR, line VARCHAR) WITH (KAFKA_TOPIC='org.cta.raw.turnstile', VALUE_FORMAT='AVRO');
 
-CREATE TABLE TURNSTILE_SUMMARY_STREAM WITH (VALUE_FORMAT='JSON') AS SELECT station_id, COUNT(station_id) as count FROM turnstilestream GROUP BY station_id;
+CREATE TABLE TURNSTILE_SUMMARY_STREAM WITH (VALUE_FORMAT='JSON') AS SELECT station_id as station_id, COUNT(station_id) as count FROM turnstilestream GROUP BY station_id;
 """
 
 

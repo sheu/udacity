@@ -97,7 +97,7 @@ class KafkaConsumer:
             return 0
         else:
             self.message_handler.process_message(message)
-            # logger.info(f"consumed message {message.key()}: {message.value()}")
+            logger.info(f"consumed message {message.key()}:  topic: {message.topic()}")
             return 1
 
     def close(self):

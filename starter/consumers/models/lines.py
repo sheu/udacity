@@ -33,9 +33,9 @@ class Lines:
                 self.blue_line.process_message(message)
             else:
                 logger.debug("discarding unknown line msg %s", value["line"])
-        elif "TURNSTILE_SUMMARY_STREAM" == message.topic():
+        elif message.topic() == "TURNSTILE_SUMMARY_STREAM":
             self.green_line.process_message(message)
             self.red_line.process_message(message)
             self.blue_line.process_message(message)
         else:
-            logger.info("ignoring non-lines message %s", message.topic())
+            print(f"ignoring non-lines message {message.topic()}")
